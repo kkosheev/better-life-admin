@@ -1,13 +1,22 @@
 import './index.css'
-import { Navigation } from './Navigation'
-import { BrowserRouter, Route } from 'react-router-dom'
-import { Product } from '@/features/products/Product'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+// import { Product } from '@/features/products/Product'
+import { AdminLayout } from '@/layout/AdminLayout'
+import { ProductCreate } from '@/pages/product/CreateProduct'
 
 function App() {
     return (
         <BrowserRouter>
-            <Navigation />
-            <Route path="/product" element={<Product />} />
+            <Routes>
+                <Route
+                    path="/product"
+                    element={
+                        <AdminLayout>
+                            <ProductCreate />
+                        </AdminLayout>
+                    }
+                />
+            </Routes>
         </BrowserRouter>
     )
 }
