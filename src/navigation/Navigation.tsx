@@ -10,15 +10,18 @@ import {
     MenubarSubTrigger,
     MenubarSubContent,
 } from '@/components/ui/menubar'
+import { useNavigate } from 'react-router-dom'
 
 export function Navigation() {
+    const navigate = useNavigate()
+
     return (
         <Menubar>
             <MenubarMenu>
                 <MenubarTrigger>Products</MenubarTrigger>
                 <MenubarContent>
-                    <MenubarItem>List Products</MenubarItem>
-                    <MenubarItem>Add Product</MenubarItem>
+                    <MenubarItem onClick={() => navigate('/products')}>List Products</MenubarItem>
+                    <MenubarItem onClick={() => navigate('/product/create')}>Add Product</MenubarItem>
                 </MenubarContent>
             </MenubarMenu>
             <MenubarMenu>

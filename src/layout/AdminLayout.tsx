@@ -9,7 +9,7 @@ export const AdminLayout: React.FC<ComponentProps> = ({ children }) => {
     return (
         <>
             <Navigation />
-            {children}
+            <div className="flex p-8">{children}</div>
         </>
     )
 }
