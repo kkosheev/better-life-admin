@@ -1,9 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 const { fontFamily } = require('tailwindcss/defaultTheme')
 
-export default {
-    content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+module.exports = {
     darkMode: ['class'],
+    content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
     theme: {
         container: {
             center: true,
@@ -54,7 +54,6 @@ export default {
                 sm: 'calc(var(--radius) - 4px)',
             },
             fontFamily: {
-                //sans: ['var(--font-sans)', ...fontFamily.sans],
                 sans: ['Inter', ...fontFamily.sans],
             },
             keyframes: {

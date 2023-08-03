@@ -11,14 +11,14 @@
     },
     "dependencies": {
         "@radix-ui/react-menubar": "^1.0.3",
-        "class-variance-authority": "^0.6.0",
-        "clsx": "^1.2.1",
-        "lucide-react": "^0.241.0",
+        "class-variance-authority": "^0.7.0",
+        "clsx": "^2.0.0",
+        "lucide-react": "^0.263.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router-dom": "^6.12.1",
-        "tailwind-merge": "^1.13.1",
-        "tailwindcss-animate": "^1.0.5"
+        "tailwind-merge": "^1.14.0",
+        "tailwindcss-animate": "^1.0.6"
     },
     "devDependencies": {
         "@types/node": "^20.2.5",
