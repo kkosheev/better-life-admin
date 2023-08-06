@@ -4,29 +4,41 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { AdminLayout } from '@/layout/AdminLayout'
 import { ProductCreate } from '@/pages/product/CreateProduct'
 import { ListProducts } from './pages/product/ListProducts'
+import { QueryClientProvider, QueryClient } from 'react-query'
+
+// Create a client
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            refetchOnWindowFocus: false,
+        },
+    },
+})
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                <Route
-                    path="/products"
-                    element={
-                        <AdminLayout>
-                            <ListProducts />
-                        </AdminLayout>
-                    }
-                />
-                <Route
-                    path="/product/create"
-                    element={
-                        <AdminLayout>
-                            <ProductCreate />
-                        </AdminLayout>
-                    }
-                />
-            </Routes>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Routes>
+                    <Route
+                        path="/products"
+                        element={
+                            <AdminLayout>
+                                <ListProducts />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        path="/product/create"
+                        element={
+                            <AdminLayout>
+                                <ProductCreate />
+                            </AdminLayout>
+                        }
+                    />
+                </Routes>
+            </BrowserRouter>
+        </QueryClientProvider>
     )
 }
 
