@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <BrowserRouter basename="https://kkosheev.github.io/better-life-admin">
+            <BrowserRouter basename="https://kkosheev.github.io/better-life-admin/">
                 <Routes>
                     <Route
                         path="/products"
