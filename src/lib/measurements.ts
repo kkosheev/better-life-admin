@@ -415,7 +415,7 @@ export const nutrientsLabels = {
     },
 }
 
-export const nutrientsTemplate = {
+export const nutrientsValues = {
     proximates: {
         protein: 0,
         water: 0,

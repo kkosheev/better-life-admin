@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import { Navigation } from '@/navigation/Navigation'
+import { Toaster } from '@/components/ui/toaster'
 
 interface ComponentProps {
     children: ReactNode
