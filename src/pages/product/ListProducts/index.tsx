@@ -21,7 +21,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -83,9 +82,7 @@ const columns: ColumnDef<unknown, any>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: ({ row }) => {
-            const payment = row.original
-
+        cell: () => {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -96,9 +93,7 @@ const columns: ColumnDef<unknown, any>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem disabled onClick={() => navigator.clipboard.writeText(payment.id)}>
-                            Edit Product
-                        </DropdownMenuItem>
+                        <DropdownMenuItem disabled>Edit Product</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

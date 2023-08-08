@@ -13,7 +13,7 @@ import { fetchCategories } from '@/lib/data'
 import { useQuery } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CaretSortIcon, ReloadIcon } from '@radix-ui/react-icons'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
 
@@ -23,8 +23,6 @@ interface Category {
     parent_id: string | null
     label: string
 }
-
-type ProximatesKeys = keyof (typeof nutrientsLabels)['proximates']
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -78,7 +76,7 @@ export const ProductCreate: React.FC = () => {
             setLoading(true)
 
             // better-life-serverless-functions-kkosheev.vercel.app
-            const result = await axios.post(
+            await axios.post(
                 'https://better-life-serverless-functions-kkosheev.vercel.app/api/category/create',
                 {
                     data: values,
@@ -257,7 +255,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.proximates[key].label} (
@@ -302,7 +300,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.proximates_adv[key].label} (
@@ -343,7 +341,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.vitamins[key].label} (
@@ -379,16 +377,14 @@ export const ProductCreate: React.FC = () => {
                             <CollapsibleContent className="space-y-2">
                                 {Object.keys(nutrientsLabels.vitamins_adv)
                                     .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.vitamins_adv.${key}`
-
+                                    .map((key: any) => {
                                         return (
                                             <FormField
                                                 key={`nutrients.vitamins_adv.${key}`}
                                                 control={form.control}
-                                                name={fieldKey}
+                                                name={`nutrients.vitamins_adv.${key}`}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.vitamins_adv[key].label} (
@@ -420,7 +416,7 @@ export const ProductCreate: React.FC = () => {
                             <CollapsibleContent className="space-y-2">
                                 {Object.keys(nutrientsLabels.minerals)
                                     .sort()
-                                    .map((key: string) => {
+                                    .map((key: keyof typeof nutrientsLabels.minerals) => {
                                         const fieldKey = `nutrients.minerals.${key}`
 
                                         return (
@@ -429,7 +425,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.minerals[key].label} (
@@ -474,7 +470,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.aminoacids[key].label} (
@@ -515,7 +511,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.alcohol[key].label} (
@@ -556,7 +552,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.caffeine[key].label} (
@@ -597,7 +593,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.extra[key].label} (
@@ -638,7 +634,7 @@ export const ProductCreate: React.FC = () => {
                                                 control={form.control}
                                                 name={fieldKey}
                                                 defaultValue={0}
-                                                render={({ field }) => (
+                                                render={({ field }: any) => (
                                                     <FormItem>
                                                         <FormLabel>
                                                             {nutrientsLabels.other[key].label} (

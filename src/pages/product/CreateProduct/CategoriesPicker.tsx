@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 

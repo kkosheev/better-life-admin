@@ -1,15 +1,4 @@
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarShortcut,
-    MenubarTrigger,
-    MenubarSub,
-    MenubarSubTrigger,
-    MenubarSubContent,
-} from '@/components/ui/menubar'
+import { Menubar, MenubarContent, MenubarItem, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar'
 import { useNavigate } from 'react-router-dom'
 
 export function Navigation() {

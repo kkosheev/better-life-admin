@@ -11,6 +11,7 @@ export const AdminLayout: React.FC<ComponentProps> = ({ children }) => {
         <>
             <Navigation />
             <div className="flex p-8">{children}</div>
+            <Toaster />
         </>
     )
 }
