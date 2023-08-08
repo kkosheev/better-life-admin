@@ -1,5 +1,5 @@
 import './index.css'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 // import { Product } from '@/features/products/Product'
 import { AdminLayout } from '@/layout/AdminLayout'
 import { ProductCreate } from '@/pages/product/CreateProduct'
@@ -18,7 +18,8 @@ const queryClient = new QueryClient({
 function App() {
     return (
         <QueryClientProvider client={queryClient}>
-            <BrowserRouter basename="https://kkosheev.github.io/better-life-admin/">
+            {/* <BrowserRouter></BrowserRouter> */}
+            <HashRouter>
                 <Routes>
                     <Route
                         path="/products"
@@ -37,7 +38,7 @@ function App() {
                         }
                     />
                 </Routes>
-            </BrowserRouter>
+            </HashRouter>
         </QueryClientProvider>
     )
 }
