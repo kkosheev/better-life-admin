@@ -77,7 +77,7 @@ export const ProductCreate: React.FC = () => {
 
             // better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
-                'http://localhost:3000/api/products/create',
+                'https://better-life-serverless-functions-kkosheev.vercel.app/api/products/create',
                 {
                     data: values,
                     selectedCategories: selectedCategories,
