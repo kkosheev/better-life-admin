@@ -10,6 +10,7 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     ColumnFiltersState,
+    PaginationState,
 } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useQuery } from 'react-query'
@@ -102,22 +103,51 @@ const columns: ColumnDef<unknown, any>[] = [
 ]
 
 export const ListProducts: React.FC = () => {
-    const { data: products, isLoading } = useQuery('products', fetchProducts)
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
 
+    const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    })
+
+    const fetchDataOptions = {
+        pageIndex,
+        pageSize,
+    }
+
+    const { data: products, isLoading } = useQuery(
+        ['products', fetchDataOptions],
+        () => fetchProducts(fetchDataOptions),
+        { keepPreviousData: true }
+    )
+
+    console.log(products)
+
+    const pagination = React.useMemo(
+        () => ({
+            pageIndex,
+            pageSize,
+        }),
+        [pageIndex, pageSize]
+    )
+
     const table = useReactTable({
-        data: products,
+        data: products?.data,
         columns,
+        pageCount: products?.pageCount ?? -1,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
+        //getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
+        manualPagination: true,
         state: {
             sorting,
             columnFilters,
+            pagination,
         },
     })
 

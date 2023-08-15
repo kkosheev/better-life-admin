@@ -1,3 +1,3 @@
 export function Product() {
-    return <div>some product page</div>
+    return <div>Product feature</div>
 }
