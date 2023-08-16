@@ -12,7 +12,7 @@ import { CategoriesPicker } from '../components/CategoriesPicker'
 import { fetchCategories } from '@/lib/data'
 import { useQuery } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { CaretSortIcon, ReloadIcon } from '@radix-ui/react-icons'
+import { CaretSortIcon, ReloadIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
@@ -54,6 +54,8 @@ export const ProductCreate: React.FC = () => {
     const [extraOpen, setExtraOpen] = useState(false)
     const [otherOpen, setOtherOpen] = useState(false)
 
+    const [customServings, setCustomServings] = useState([])
+
     const { data: categoriesData } = useQuery('categories', fetchCategories, {
         initialData: [],
     })
@@ -70,17 +72,50 @@ export const ProductCreate: React.FC = () => {
         },
     })
 
+    const handleAddServing = () => {
+        setCustomServings([...customServings, { label: '', value: 0 }])
+    }
+
+    const removeServing = (indexToRemove) => {
+        setCustomServings(customServings.filter((_, index) => index !== indexToRemove))
+    }
+
+    const handleChangeServingLabel = (event, index) => {
+        const text = event.target.value
+        const copyServings = [...customServings]
+
+        copyServings[index] = {
+            label: text,
+            value: copyServings[index].value,
+        }
+
+        setCustomServings([...copyServings])
+    }
+
+    const handleChangeServingValue = (event, index) => {
+        const text = event.target.value
+        const copyServings = [...customServings]
+
+        copyServings[index] = {
+            label: copyServings[index].label,
+            value: text,
+        }
+
+        setCustomServings([...copyServings])
+    }
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             setError('')
             setLoading(true)
 
-            // better-life-serverless-functions-kkosheev.vercel.app
+            //better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
-                'http://localhost:3000/api/products/create',
+                'https://better-life-serverless-functions-kkosheev.vercel.app/api/products/create',
                 {
                     data: values,
                     selectedCategories: selectedCategories,
+                    custom_servings: customServings,
                 },
                 {
                     headers: {
@@ -662,6 +697,39 @@ export const ProductCreate: React.FC = () => {
                         selectedCategories={selectedCategories}
                         setSelectedCategories={setSelectedCategories}
                     />
+                </div>
+                <div className="my-10 space-y-4">
+                    <h2 className="text-lg font-bold">Custom Servings</h2>
+                    <Button onClick={handleAddServing}>
+                        <PlusIcon /> &nbsp; Add serving
+                    </Button>
+                    {customServings.map((serving, index) => {
+                        return (
+                            <div className="min-w-max flex flex-row justify-between  items-center space-between space-x-3 space-y-0 rounded-md border-2 p-2">
+                                <div className="flex flex-row">
+                                    <div className="w-32 mr-5">
+                                        <Input
+                                            onChange={(event) => handleChangeServingLabel(event, index)}
+                                            placeholder="1 piece"
+                                            value={customServings[index].label}
+                                        />
+                                    </div>
+                                    <div className="w-16">
+                                        <Input
+                                            onChange={(event) => handleChangeServingValue(event, index)}
+                                            placeholder="0"
+                                            value={customServings[index].value}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <Button variant="outline" size="icon" onClick={() => removeServing(index)}>
+                                        <TrashIcon className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </div>
