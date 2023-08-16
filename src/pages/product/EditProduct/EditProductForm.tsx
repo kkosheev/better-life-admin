@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CategoriesPicker } from '../components/CategoriesPicker'
 import { fetchCategories } from '@/lib/data'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CaretSortIcon, ReloadIcon } from '@radix-ui/react-icons'
 import axios from 'axios'
@@ -35,13 +35,15 @@ const formSchema = z.object({
     nutrients: nutrientsSchema,
 })
 
-export const ProductCreate: React.FC = () => {
+export const EditProductForm: React.FC = ({ product, productCategories }: any) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
-    const [selectedCategories, setSelectedCategories] = useState<Category[]>([])
+    const [selectedCategories, setSelectedCategories] = useState<Category[]>(productCategories)
 
     const navigate = useNavigate()
     const { toast } = useToast()
+
+    const queryClient = useQueryClient()
 
     const [proximatesOpen, setProximatesOpen] = useState(false)
     const [proximatesAdvOpen, setProximatesAdvOpen] = useState(false)
@@ -61,12 +63,25 @@ export const ProductCreate: React.FC = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: '',
-            image: '',
-            pure: true,
-            glycemicIndex: 0,
-            nutritionScore: 0,
-            nutrients: nutrientsValues,
+            name: product.name,
+            image: product.image_url,
+            pure: Boolean(product.pure),
+            unit: product.unit,
+            price: product.price,
+            glycemicIndex: product.glycemic_index,
+            nutritionScore: product.nutrition_score,
+            nutrients: {
+                proximates: product.proximates,
+                proximates_adv: product.proximates_adv,
+                vitamins: product.vitamins,
+                vitamins_adv: product.vitamins_adv,
+                minerals: product.minerals,
+                aminoacids: product.aminoacids,
+                alcohol: product.alcohol,
+                caffeine: product.caffeine,
+                extra: product.extra,
+                other: product.other,
+            },
         },
     })
 
@@ -77,8 +92,9 @@ export const ProductCreate: React.FC = () => {
 
             // better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
-                'http://localhost:3000/api/products/create',
+                'http://localhost:3000/api/products/updatebyid',
                 {
+                    id: product.id,
                     data: values,
                     selectedCategories: selectedCategories,
                 },
@@ -91,8 +107,9 @@ export const ProductCreate: React.FC = () => {
 
             toast({
                 title: 'Hooray 🎉',
-                description: 'Product added successfully!',
+                description: 'Product updated successfully!',
             })
+            queryClient.invalidateQueries('product')
             navigate('/products')
         } catch (err: any) {
             console.log(err.response.data.message)
@@ -109,7 +126,7 @@ export const ProductCreate: React.FC = () => {
             {error && <div className="rounded-md p-4 bg-red-100 text-red-900 col-span-3 font-semibold">{error}</div>}
             <Form {...form}>
                 <div>
-                    <h1 className="text-xl font-bold">Create Product</h1>
+                    <h1 className="text-xl font-bold">Edit Product</h1>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}

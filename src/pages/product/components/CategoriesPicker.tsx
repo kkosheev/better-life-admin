@@ -54,16 +54,17 @@ export const CategoriesPicker: React.FC<CategoriesPicker> = ({
             <Button onClick={handleClick}>
                 <PlusIcon /> &nbsp; Add category
             </Button>
-            {selectedCategories.map((item) => (
-                <div className="flex flex-row justify-center items-center space-between space-x-3 space-y-0 rounded-md border-2 p-2">
-                    <div className="flex-grow">{categories.find((element) => element.id === item)?.label}</div>
-                    <div>
-                        <Button variant="outline" size="icon" onClick={() => handleDelete(item)}>
-                            <TrashIcon className="h-4 w-4" />
-                        </Button>
+            {categories &&
+                selectedCategories.map((item) => (
+                    <div className="flex flex-row justify-center items-center space-between space-x-3 space-y-0 rounded-md border-2 p-2">
+                        <div className="flex-grow">{categories.find((element) => element.id === item)?.label}</div>
+                        <div>
+                            <Button variant="outline" size="icon" onClick={() => handleDelete(item)}>
+                                <TrashIcon className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
         </>
     )
 }

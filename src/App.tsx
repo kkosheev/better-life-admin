@@ -3,6 +3,7 @@ import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 // import { Product } from '@/features/products/Product'
 import { AdminLayout } from '@/layout/AdminLayout'
 import { ProductCreate } from '@/pages/product/CreateProduct'
+import { EditProduct } from './pages/product/EditProduct'
 import { ListProducts } from './pages/product/ListProducts'
 import { QueryClientProvider, QueryClient } from 'react-query'
 
@@ -34,6 +35,14 @@ function App() {
                         element={
                             <AdminLayout>
                                 <ProductCreate />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        path="/products/edit/:id"
+                        element={
+                            <AdminLayout>
+                                <EditProduct />
                             </AdminLayout>
                         }
                     />

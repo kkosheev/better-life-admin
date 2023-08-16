@@ -25,6 +25,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { useNavigate } from 'react-router-dom'
 
 const columns: ColumnDef<unknown, any>[] = [
     {
@@ -83,7 +84,9 @@ const columns: ColumnDef<unknown, any>[] = [
     {
         id: 'actions',
         enableHiding: false,
-        cell: () => {
+        cell: ({ row }) => {
+            const navigate = useNavigate()
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -94,7 +97,9 @@ const columns: ColumnDef<unknown, any>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem disabled>Edit Product</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate(`/products/edit/${row.original?.id}`)}>
+                            Edit Product
+                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )
