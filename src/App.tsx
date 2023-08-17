@@ -3,9 +3,10 @@ import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 // import { Product } from '@/features/products/Product'
 import { AdminLayout } from '@/layout/AdminLayout'
 import { ProductCreate } from '@/pages/product/CreateProduct'
-import { EditProduct } from './pages/product/EditProduct'
-import { ListProducts } from './pages/product/ListProducts'
+import { EditProduct } from '@/pages/product/EditProduct'
+import { ListProducts } from '@/pages/product/ListProducts'
 import { QueryClientProvider, QueryClient } from 'react-query'
+import { CreateRecipe } from '@/pages/recipe/CreateRecipe'
 
 // Create a client
 const queryClient = new QueryClient({
@@ -43,6 +44,14 @@ function App() {
                         element={
                             <AdminLayout>
                                 <EditProduct />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        path="/recipe/create"
+                        element={
+                            <AdminLayout>
+                                <CreateRecipe />
                             </AdminLayout>
                         }
                     />
