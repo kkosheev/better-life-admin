@@ -126,7 +126,7 @@ export const EditProductForm: React.FC = ({ product, productCategories }: any) =
 
             // better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
-                'http://localhost:3000/api/products/updatebyid',
+                'https://better-life-serverless-functions-kkosheev.vercel.app/api/products/updatebyid',
                 {
                     id: product.id,
                     data: values,

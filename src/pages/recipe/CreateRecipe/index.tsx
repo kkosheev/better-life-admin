@@ -8,13 +8,17 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { fetchCategories } from '@/lib/data'
+import { fetchCategories, fetchSearchProducts } from '@/lib/data'
 import { useQuery } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { CaretSortIcon, ReloadIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { PopoverClose } from '@radix-ui/react-popover'
+import { servings, servingsLabels } from '@/lib/servings'
+import { calculateNutrientsForIngredients } from '@/core'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -23,6 +27,62 @@ const formSchema = z.object({
     difficulty: z.coerce.number().gte(0).lte(4),
 })
 
+export const Ingredient: React.FC = ({ ingredient, index, onEdit, onDelete }: any) => {
+    //const [localIngredient, setLocalIngredient] = useState(ingredient)
+
+    const handleChangeWeight = (event) => {
+        const weight = event.target.value
+        onEdit(index, {
+            ...ingredient,
+            serving_amount: weight,
+        })
+    }
+
+    const handleServingChange = (value) => {
+        onEdit(index, {
+            ...ingredient,
+            serving_label: value,
+        })
+    }
+
+    const handleRemoveIngredient = (index) => {
+        onDelete(index)
+    }
+
+    return (
+        <div className="min-w-max flex flex-row justify-between items-center space-between space-x-3 space-y-0 rounded-md border-2 p-2">
+            <div className="ml-2 mr-5">
+                <span className="text-sm font-semibold">{ingredient.product.name}</span>
+            </div>
+            <div className="w-20">
+                <Input
+                    placeholder="100"
+                    value={ingredient.serving_amount}
+                    type={'number'}
+                    onChange={handleChangeWeight}
+                />
+            </div>
+            <div className="min-w-min">
+                <Select onValueChange={handleServingChange} value={ingredient.serving_label}>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Unit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {servingsLabels.map((serving) => (
+                            <SelectItem value={serving}>{serving}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+            <div>
+                <Button variant="outline" size="icon" onClick={() => handleRemoveIngredient(index)}>
+                    <TrashIcon className="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
+    )
+}
+
 export const CreateRecipe: React.FC = () => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
@@ -30,7 +90,11 @@ export const CreateRecipe: React.FC = () => {
     const navigate = useNavigate()
     const { toast } = useToast()
 
+    const [loadingProducts, setLoadingProducts] = useState(false)
+    const [foundProducts, setFoundProducts] = useState([])
     const [ingredients, setIngredients] = useState([])
+
+    const [totalNutrients, setTotalNutrients] = useState(nutrientsValues)
 
     const [proximatesOpen, setProximatesOpen] = useState(false)
     const [proximatesAdvOpen, setProximatesAdvOpen] = useState(false)
@@ -52,6 +116,48 @@ export const CreateRecipe: React.FC = () => {
             difficulty: '1',
         },
     })
+
+    const handleEdit = (index, newValue) => {
+        // Create a new array with the updated item
+        const newData = [...ingredients]
+        newData[index] = { ...newValue }
+
+        console.log(newData)
+
+        setIngredients(newData)
+    }
+
+    React.useEffect(() => {
+        const result = calculateNutrientsForIngredients(ingredients)
+        setTotalNutrients(result)
+    }, [ingredients])
+
+    const handleDeleteIngredient = (index) => {
+        const newData = [...ingredients]
+        newData.splice(index, 1)
+
+        setIngredients([...newData])
+    }
+
+    const handleAddIngredientToList = (product) => {
+        const newProduct = {
+            product: product,
+            serving_label: servingsLabels[1],
+            serving_amount: 100,
+        }
+
+        setIngredients([...ingredients, newProduct])
+    }
+
+    const handleSearchIngredient = async (event) => {
+        setLoadingProducts(true)
+
+        const name = event.target.value
+        const result = await fetchSearchProducts(name)
+
+        setFoundProducts(result)
+        setLoadingProducts(false)
+    }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -165,9 +271,61 @@ export const CreateRecipe: React.FC = () => {
                 </div>
                 <div className="space-y-4">
                     <h1 className="text-xl font-bold">Ingredients list</h1>
-                    <Button onClick={() => alert('add ingredient')}>
-                        <PlusIcon /> &nbsp; Add serving
-                    </Button>
+                    {ingredients.map((ingredient, index) => (
+                        <Ingredient
+                            ingredient={ingredient}
+                            index={index}
+                            onEdit={handleEdit}
+                            onDelete={handleDeleteIngredient}
+                        />
+                    ))}
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button>
+                                <PlusIcon /> &nbsp; Add serving
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-100">
+                            <div className="grid gap-4">
+                                <div className="space-y-2">
+                                    <h4 className="font-medium leading-none">Search product</h4>
+                                </div>
+                                <div className="grid gap-2">
+                                    <div className="grid grid-cols-3 items-center gap-4">
+                                        <Input
+                                            placeholder="Apple"
+                                            onChange={handleSearchIngredient}
+                                            className="col-span-2 h-8"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid">
+                                    {loadingProducts && <ReloadIcon className="mr-2 h-6 w-6 animate-spin" />}
+                                    {!loadingProducts && foundProducts.length === 0 && (
+                                        <p className="text-sm text-muted-foreground">No products found</p>
+                                    )}
+                                    {!loadingProducts &&
+                                        foundProducts.map((product) => (
+                                            <div className={'grid gap-1 grid-cols-4 items-center'}>
+                                                <img className="h-10 w-10" src={product.image_url} />
+                                                <div className={'col-span-2'}>
+                                                    <span className="text-sm font-semibold">{product.name}</span>
+                                                </div>
+                                                <PopoverClose asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        onClick={() => handleAddIngredientToList(product)}
+                                                    >
+                                                        <PlusIcon className="h-4 w-4" />
+                                                        &nbsp; Add
+                                                    </Button>
+                                                </PopoverClose>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div>
                     <h1 className="text-xl font-bold">Total nutrients</h1>
