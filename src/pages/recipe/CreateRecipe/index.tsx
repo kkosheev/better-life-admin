@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { PopoverClose } from '@radix-ui/react-popover'
 import { servings, servingsLabels } from '@/lib/servings'
 import { calculateNutrientsForIngredients } from '@/core'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -68,6 +69,18 @@ export const Ingredient: React.FC = ({ ingredient, index, onEdit, onDelete }: an
                         <SelectValue placeholder="Unit" />
                     </SelectTrigger>
                     <SelectContent>
+                        {ingredient.product.custom_servings && (
+                            <SelectItem value={'-Custom-'} disabled>
+                                ---- Custom ----
+                            </SelectItem>
+                        )}
+                        {ingredient.product.custom_servings &&
+                            ingredient.product.custom_servings.map((serv) => (
+                                <SelectItem value={serv.label}>{serv.label}</SelectItem>
+                            ))}
+                        <SelectItem value={'-Standard-'} disabled>
+                            ---- Standard ----
+                        </SelectItem>
                         {servingsLabels.map((serving) => (
                             <SelectItem value={serving}>{serving}</SelectItem>
                         ))}
@@ -92,7 +105,9 @@ export const CreateRecipe: React.FC = () => {
 
     const [loadingProducts, setLoadingProducts] = useState(false)
     const [foundProducts, setFoundProducts] = useState([])
+
     const [ingredients, setIngredients] = useState([])
+    const [cookingSteps, setCookingSteps] = useState([])
 
     const [totalNutrients, setTotalNutrients] = useState(nutrientsValues)
 
@@ -121,9 +136,6 @@ export const CreateRecipe: React.FC = () => {
         // Create a new array with the updated item
         const newData = [...ingredients]
         newData[index] = { ...newValue }
-
-        console.log(newData)
-
         setIngredients(newData)
     }
 
@@ -269,63 +281,79 @@ export const CreateRecipe: React.FC = () => {
                         </Button>
                     </form>
                 </div>
-                <div className="space-y-4">
-                    <h1 className="text-xl font-bold">Ingredients list</h1>
-                    {ingredients.map((ingredient, index) => (
-                        <Ingredient
-                            ingredient={ingredient}
-                            index={index}
-                            onEdit={handleEdit}
-                            onDelete={handleDeleteIngredient}
-                        />
-                    ))}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button>
-                                <PlusIcon /> &nbsp; Add serving
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-100">
-                            <div className="grid gap-4">
-                                <div className="space-y-2">
-                                    <h4 className="font-medium leading-none">Search product</h4>
-                                </div>
-                                <div className="grid gap-2">
-                                    <div className="grid grid-cols-3 items-center gap-4">
-                                        <Input
-                                            placeholder="Apple"
-                                            onChange={handleSearchIngredient}
-                                            className="col-span-2 h-8"
-                                        />
+                <div className="space-y-12">
+                    <div className="space-y-4">
+                        <h1 className="text-xl font-bold">Ingredients list</h1>
+                        {ingredients.map((ingredient, index) => (
+                            <Ingredient
+                                ingredient={ingredient}
+                                index={index}
+                                onEdit={handleEdit}
+                                onDelete={handleDeleteIngredient}
+                            />
+                        ))}
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button>
+                                    <PlusIcon /> &nbsp; Add serving
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-100">
+                                <div className="grid gap-4">
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium leading-none">Search product</h4>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <div className="grid grid-cols-3 items-center gap-4">
+                                            <Input
+                                                placeholder="Apple"
+                                                onChange={handleSearchIngredient}
+                                                className="col-span-2 h-8"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid">
+                                        {loadingProducts && <ReloadIcon className="mr-2 h-6 w-6 animate-spin" />}
+                                        {!loadingProducts && foundProducts.length === 0 && (
+                                            <p className="text-sm text-muted-foreground">No products found</p>
+                                        )}
+                                        {!loadingProducts &&
+                                            foundProducts.map((product) => (
+                                                <div className={'grid gap-1 grid-cols-4 items-center'}>
+                                                    <img className="h-10 w-10" src={product.image_url} />
+                                                    <div className={'col-span-2'}>
+                                                        <span className="text-sm font-semibold">{product.name}</span>
+                                                    </div>
+                                                    <PopoverClose asChild>
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() => handleAddIngredientToList(product)}
+                                                        >
+                                                            <PlusIcon className="h-4 w-4" />
+                                                            &nbsp; Add
+                                                        </Button>
+                                                    </PopoverClose>
+                                                </div>
+                                            ))}
                                     </div>
                                 </div>
-                                <div className="grid">
-                                    {loadingProducts && <ReloadIcon className="mr-2 h-6 w-6 animate-spin" />}
-                                    {!loadingProducts && foundProducts.length === 0 && (
-                                        <p className="text-sm text-muted-foreground">No products found</p>
-                                    )}
-                                    {!loadingProducts &&
-                                        foundProducts.map((product) => (
-                                            <div className={'grid gap-1 grid-cols-4 items-center'}>
-                                                <img className="h-10 w-10" src={product.image_url} />
-                                                <div className={'col-span-2'}>
-                                                    <span className="text-sm font-semibold">{product.name}</span>
-                                                </div>
-                                                <PopoverClose asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        onClick={() => handleAddIngredientToList(product)}
-                                                    >
-                                                        <PlusIcon className="h-4 w-4" />
-                                                        &nbsp; Add
-                                                    </Button>
-                                                </PopoverClose>
-                                            </div>
-                                        ))}
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                    <div className="space-y-4">
+                        <h1 className="text-xl font-bold">Cooking Steps</h1>
+                        {ingredients.map((ingredient, index) => (
+                            <Ingredient
+                                ingredient={ingredient}
+                                index={index}
+                                onEdit={handleEdit}
+                                onDelete={handleDeleteIngredient}
+                            />
+                        ))}
+                        <Button>
+                            <PlusIcon /> &nbsp; Add step
+                        </Button>
+                    </div>
                 </div>
                 <div>
                     <h1 className="text-xl font-bold">Total nutrients</h1>
@@ -345,32 +373,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.proximates)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.proximates.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.proximates.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.proximates[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.proximates)
+                                            .sort()
+                                            .map((key, index) => {
+                                                return (
+                                                    <TableRow key={`${key}_${index}`}>
+                                                        <TableCell>{nutrientsLabels.proximates[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.proximates[key]} (
                                                             {nutrientsLabels.proximates[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -390,32 +415,31 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.proximates_adv)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.proximates_adv.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.proximates_adv.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.proximates_adv[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.proximates_adv)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.proximates_adv[key]}>
+                                                        <TableCell>
+                                                            {nutrientsLabels.proximates_adv[key].label}
+                                                        </TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.proximates_adv[key]} (
                                                             {nutrientsLabels.proximates_adv[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -431,32 +455,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.vitamins)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.vitamins.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.vitamins.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.vitamins[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.vitamins)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.vitamins[key]}>
+                                                        <TableCell>{nutrientsLabels.vitamins[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.vitamins[key]} (
                                                             {nutrientsLabels.vitamins[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -476,30 +497,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.vitamins_adv)
-                                    .sort()
-                                    .map((key: any) => {
-                                        return (
-                                            <FormField
-                                                key={`nutrients.vitamins_adv.${key}`}
-                                                control={form.control}
-                                                name={`nutrients.vitamins_adv.${key}`}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.vitamins_adv[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.vitamins_adv)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.vitamins_adv[key]}>
+                                                        <TableCell>{nutrientsLabels.vitamins_adv[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.vitamins_adv[key]} (
                                                             {nutrientsLabels.vitamins_adv[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -515,32 +535,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.minerals)
-                                    .sort()
-                                    .map((key: keyof typeof nutrientsLabels.minerals) => {
-                                        const fieldKey = `nutrients.minerals.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.minerals.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.minerals[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.minerals)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.minerals[key]}>
+                                                        <TableCell>{nutrientsLabels.minerals[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.minerals[key]} (
                                                             {nutrientsLabels.minerals[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -560,32 +577,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.aminoacids)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.aminoacids.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.aminoacids.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.aminoacids[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.aminoacids)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.aminoacids[key]}>
+                                                        <TableCell>{nutrientsLabels.aminoacids[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.aminoacids[key]} (
                                                             {nutrientsLabels.aminoacids[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -601,32 +615,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.alcohol)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.alcohol.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.alcohol.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.alcohol[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.alcohol)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.alcohol[key]}>
+                                                        <TableCell>{nutrientsLabels.alcohol[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.alcohol[key]} (
                                                             {nutrientsLabels.alcohol[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -642,32 +653,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.caffeine)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.caffeine.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.caffeine.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.caffeine[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.caffeine)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.caffeine[key]}>
+                                                        <TableCell>{nutrientsLabels.caffeine[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.caffeine[key]} (
                                                             {nutrientsLabels.caffeine[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -683,32 +691,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.extra)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.extra.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.extra.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.extra[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.extra)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.extra[key]}>
+                                                        <TableCell>{nutrientsLabels.extra[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.extra[key]} (
                                                             {nutrientsLabels.extra[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
@@ -724,32 +729,29 @@ export const CreateRecipe: React.FC = () => {
                                 </CollapsibleTrigger>
                             </div>
                             <CollapsibleContent className="space-y-2">
-                                {Object.keys(nutrientsLabels.other)
-                                    .sort()
-                                    .map((key: string) => {
-                                        const fieldKey = `nutrients.other.${key}`
-
-                                        return (
-                                            <FormField
-                                                key={`nutrients.other.${key}`}
-                                                control={form.control}
-                                                name={fieldKey}
-                                                defaultValue={0}
-                                                render={({ field }: any) => (
-                                                    <FormItem>
-                                                        <FormLabel>
-                                                            {nutrientsLabels.other[key].label} (
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[100px]">Name</TableHead>
+                                            <TableHead className="text-right">Amount</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Object.keys(totalNutrients.other)
+                                            .sort()
+                                            .map((key: string) => {
+                                                return (
+                                                    <TableRow key={totalNutrients.other[key]}>
+                                                        <TableCell>{nutrientsLabels.other[key].label}</TableCell>
+                                                        <TableCell className="text-right">
+                                                            {totalNutrients.other[key]} (
                                                             {nutrientsLabels.other[key].unit})
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input placeholder="0" {...field} />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        )
-                                    })}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+                                    </TableBody>
+                                </Table>
                             </CollapsibleContent>
                         </Collapsible>
                     </div>
