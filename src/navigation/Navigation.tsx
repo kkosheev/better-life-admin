@@ -16,7 +16,9 @@ export function Navigation() {
             <MenubarMenu>
                 <MenubarTrigger>Recipes</MenubarTrigger>
                 <MenubarContent>
-                    <MenubarItem onClick={() => navigate('/recipes')}>List Recipes</MenubarItem>
+                    <MenubarItem disabled onClick={() => navigate('/recipes')}>
+                        List Recipes
+                    </MenubarItem>
                     <MenubarItem onClick={() => navigate('/recipe/create')}>Add Recipe</MenubarItem>
                 </MenubarContent>
             </MenubarMenu>

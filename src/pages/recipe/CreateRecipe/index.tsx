@@ -30,7 +30,6 @@ import { calculateNutrientsForIngredients } from '@/core'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { actions } from '@/lib/actions'
 import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -38,6 +37,25 @@ const formSchema = z.object({
     cooking_time: z.coerce.number().gte(0),
     difficulty: z.coerce.number().gte(0).lte(4),
 })
+
+const fn =
+    (order: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) =>
+    (index: number) =>
+        active && index === originalIndex
+            ? {
+                  y: curIndex * 0 + y,
+                  scale: 1.1,
+                  zIndex: 1,
+                  shadow: 15,
+                  immediate: (key: string) => key === 'y' || key === 'zIndex',
+              }
+            : {
+                  y: order.indexOf(index) * 0,
+                  scale: 1,
+                  zIndex: 0,
+                  shadow: 1,
+                  immediate: false,
+              }
 
 const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) => {
     const [localStep, setLocalStep] = useState(step)
@@ -362,9 +380,6 @@ export const CreateRecipe: React.FC = () => {
     }
 
     // Cooking Steps
-    React.useEffect(() => {
-        console.log(cookingSteps)
-    }, [cookingSteps])
 
     const handleAddCookingStep = () => {
         setCookingSteps([
@@ -399,6 +414,14 @@ export const CreateRecipe: React.FC = () => {
             setError('')
             setLoading(true)
 
+            console.log(ingredients)
+            console.log(cookingSteps)
+            console.log(values)
+
+            if (ingredients.length === 0 || cookingSteps.length === 0) {
+                setError('Ingredients list or cooking steps are missing')
+                return
+            }
             //better-life-serverless-functions-kkosheev.vercel.app
             // await axios.post(
             //     'https://better-life-serverless-functions-kkosheev.vercel.app/api/products/create',
@@ -418,7 +441,7 @@ export const CreateRecipe: React.FC = () => {
                 title: 'Hooray 🎉',
                 description: 'Recipe created successfully!',
             })
-            //navigate('/recipes')
+            navigate('/products')
         } catch (err: any) {
             console.log(err.response.data.message)
             if (err.message) {
@@ -563,20 +586,22 @@ export const CreateRecipe: React.FC = () => {
                             </PopoverContent>
                         </Popover>
                     </div>
-                    <div className="space-y-4">
+                    <div className="flex flex-col space-y-4">
                         <h1 className="text-xl font-bold">Cooking Steps</h1>
-                        {cookingSteps.map((step, index) => (
+                        {cookingSteps.map((step, i) => (
                             <CookingStep
                                 step={step}
                                 ingredients={ingredients}
-                                index={index}
+                                index={i}
                                 onEdit={handleCookingStepsEdit}
                                 onDelete={handleDeleteCookingStep}
                             />
                         ))}
-                        <Button onClick={handleAddCookingStep} disabled={ingredients.length > 0 ? false : true}>
-                            <PlusIcon /> &nbsp; Add step
-                        </Button>
+                        <div>
+                            <Button onClick={handleAddCookingStep} disabled={ingredients.length > 0 ? false : true}>
+                                <PlusIcon /> &nbsp; Add step
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div>

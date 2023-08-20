@@ -5,6 +5,7 @@ import { AdminLayout } from '@/layout/AdminLayout'
 import { ProductCreate } from '@/pages/product/CreateProduct'
 import { EditProduct } from '@/pages/product/EditProduct'
 import { ListProducts } from '@/pages/product/ListProducts'
+import { ListRecipes } from '@/pages/recipe/ListRecipes'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { CreateRecipe } from '@/pages/recipe/CreateRecipe'
 
@@ -55,6 +56,14 @@ function App() {
                             </AdminLayout>
                         }
                     />
+                    {/* <Route
+                        path="/recipes"
+                        element={
+                            <AdminLayout>
+                                <ListRecipes />
+                            </AdminLayout>
+                        }
+                    /> */}
                 </Routes>
             </HashRouter>
         </QueryClientProvider>
