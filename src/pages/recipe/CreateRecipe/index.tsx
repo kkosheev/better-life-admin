@@ -7,11 +7,19 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
 import { fetchCategories, fetchSearchProducts } from '@/lib/data'
 import { useQuery } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { CaretSortIcon, ReloadIcon, PlusIcon, TrashIcon } from '@radix-ui/react-icons'
+import {
+    CaretSortIcon,
+    ReloadIcon,
+    PlusIcon,
+    TrashIcon,
+    Pencil1Icon,
+    CheckIcon,
+    Cross1Icon,
+} from '@radix-ui/react-icons'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
@@ -20,6 +28,9 @@ import { PopoverClose } from '@radix-ui/react-popover'
 import { servings, servingsLabels } from '@/lib/servings'
 import { calculateNutrientsForIngredients } from '@/core'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { actions } from '@/lib/actions'
+import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -27,6 +38,185 @@ const formSchema = z.object({
     cooking_time: z.coerce.number().gte(0),
     difficulty: z.coerce.number().gte(0).lte(4),
 })
+
+const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) => {
+    const [localStep, setLocalStep] = useState(step)
+
+    const handleSave = () => {
+        onEdit(index, localStep)
+        setLocalStep({
+            ...localStep,
+            edit: false,
+        })
+    }
+
+    const handleRemoveStep = (index) => {
+        onDelete(index)
+    }
+
+    const handleChangeCustomText = (event) => {
+        const text = event.target.value
+        setLocalStep({
+            ...localStep,
+            customText: text,
+        })
+    }
+
+    const handleCancel = () => {
+        setLocalStep({
+            ...step,
+            edit: false,
+        })
+    }
+
+    const handleProductChange = (id) => {
+        const ingredient = ingredients.find((ing) => ing.product.id === id)
+
+        setLocalStep({
+            ...localStep,
+            product: ingredient.product,
+            serving: 'g',
+        })
+    }
+
+    const handleActionChange = (action) => {
+        setLocalStep({
+            ...localStep,
+            action: action,
+        })
+    }
+
+    const handleChangeAmount = (event) => {
+        const amount = event.target.value
+        setLocalStep({
+            ...localStep,
+            amount: amount,
+        })
+    }
+
+    const handleServingChange = (value) => {
+        setLocalStep({
+            ...localStep,
+            serving: value,
+        })
+    }
+
+    return (
+        <div className="min-w-max flex flex-col justify-between space-between space-x-3 space-y-2 rounded-md border-2 p-2">
+            <div className="flex flex-row space-x-3 items justify-end">
+                {!localStep.edit && (
+                    <div>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() =>
+                                setLocalStep({
+                                    ...localStep,
+                                    edit: true,
+                                })
+                            }
+                        >
+                            <Pencil1Icon className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
+                <div>
+                    <Button variant="outline" size="icon" onClick={() => handleRemoveStep(index)}>
+                        <TrashIcon className="h-4 w-4" />
+                    </Button>
+                </div>
+            </div>
+            <div className="flex flex-row items-center justify-between">
+                <span className="text-md font-semibold mr-2">Product: </span>
+                <div className="flex-grow">
+                    <Select onValueChange={handleProductChange} disabled={!localStep.edit}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Choose ingredient" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {ingredients.map((ing) => (
+                                <SelectItem value={ing.product.id}>{ing.product.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div className="flex flex-row items-center justify-between">
+                <span className="text-md font-semibold mr-2">Amount: </span>
+                <div className="mr-2">
+                    <Input
+                        placeholder="100"
+                        value={localStep.amount}
+                        type={'number'}
+                        disabled={!localStep.edit}
+                        onChange={handleChangeAmount}
+                    />
+                </div>
+                <div>
+                    <Select
+                        disabled={!localStep.edit}
+                        defaultValue={localStep.serving}
+                        onValueChange={handleServingChange}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {localStep.product && localStep.product.custom_servings && (
+                                <SelectItem value={'-Custom-'} disabled>
+                                    ---- Custom ----
+                                </SelectItem>
+                            )}
+                            {localStep.product &&
+                                localStep.product.custom_servings &&
+                                localStep.product.custom_servings.map((serv) => (
+                                    <SelectItem value={serv.label}>{serv.label}</SelectItem>
+                                ))}
+                            <SelectItem value={'-Standard-'} disabled>
+                                ---- Standard ----
+                            </SelectItem>
+                            {servingsLabels.map((serving) => (
+                                <SelectItem value={serving}>{serving}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div className="flex flex-row items-center justify-between">
+                <span className="text-md font-semibold mr-2">Action: </span>
+                <div className="flex-grow">
+                    <Select onValueChange={handleActionChange} disabled={!localStep.edit}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Choose action" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {actions.map((action) => (
+                                <SelectItem value={action}>{action}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+            <div>
+                <Textarea
+                    disabled={!localStep.edit}
+                    onChange={handleChangeCustomText}
+                    placeholder="Put your custom text instruction for step here instead relying on generated one..."
+                />
+            </div>
+            {localStep.edit && (
+                <div className="space-x-4">
+                    <Button onClick={handleSave}>
+                        <CheckIcon /> &nbsp; Save
+                    </Button>
+                    <Button variant="secondary" onClick={handleCancel}>
+                        <Cross1Icon /> &nbsp; Cancel
+                    </Button>
+                </div>
+            )}
+        </div>
+    )
+}
 
 export const Ingredient: React.FC = ({ ingredient, index, onEdit, onDelete }: any) => {
     //const [localIngredient, setLocalIngredient] = useState(ingredient)
@@ -169,6 +359,39 @@ export const CreateRecipe: React.FC = () => {
 
         setFoundProducts(result)
         setLoadingProducts(false)
+    }
+
+    // Cooking Steps
+    React.useEffect(() => {
+        console.log(cookingSteps)
+    }, [cookingSteps])
+
+    const handleAddCookingStep = () => {
+        setCookingSteps([
+            ...cookingSteps,
+            {
+                product: null,
+                action: null,
+                amount: 100,
+                serving: 'g',
+                edit: true,
+                customText: '',
+            },
+        ])
+    }
+
+    const handleCookingStepsEdit = (index, newValue) => {
+        const newData = [...cookingSteps]
+        newData[index] = { ...newValue }
+
+        setCookingSteps(newData)
+    }
+
+    const handleDeleteCookingStep = (index) => {
+        const newData = [...cookingSteps]
+        newData.splice(index, 1)
+
+        setCookingSteps([...newData])
     }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -342,15 +565,16 @@ export const CreateRecipe: React.FC = () => {
                     </div>
                     <div className="space-y-4">
                         <h1 className="text-xl font-bold">Cooking Steps</h1>
-                        {ingredients.map((ingredient, index) => (
-                            <Ingredient
-                                ingredient={ingredient}
+                        {cookingSteps.map((step, index) => (
+                            <CookingStep
+                                step={step}
+                                ingredients={ingredients}
                                 index={index}
-                                onEdit={handleEdit}
-                                onDelete={handleDeleteIngredient}
+                                onEdit={handleCookingStepsEdit}
+                                onDelete={handleDeleteCookingStep}
                             />
                         ))}
-                        <Button>
+                        <Button onClick={handleAddCookingStep} disabled={ingredients.length > 0 ? false : true}>
                             <PlusIcon /> &nbsp; Add step
                         </Button>
                     </div>
