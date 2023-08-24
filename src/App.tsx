@@ -8,6 +8,7 @@ import { ListProducts } from '@/pages/product/ListProducts'
 import { ListRecipes } from '@/pages/recipe/ListRecipes'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { CreateRecipe } from '@/pages/recipe/CreateRecipe'
+import { EditRecipe } from '@/pages/recipe/EditRecipe'
 
 // Create a client
 const queryClient = new QueryClient({
@@ -56,14 +57,22 @@ function App() {
                             </AdminLayout>
                         }
                     />
-                    {/* <Route
+                    <Route
                         path="/recipes"
                         element={
                             <AdminLayout>
                                 <ListRecipes />
                             </AdminLayout>
                         }
-                    /> */}
+                    />
+                    <Route
+                        path="/recipes/edit/:id"
+                        element={
+                            <AdminLayout>
+                                <EditRecipe />
+                            </AdminLayout>
+                        }
+                    />
                 </Routes>
             </HashRouter>
         </QueryClientProvider>

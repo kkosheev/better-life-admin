@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 
 export function EditProduct() {
     const { id } = useParams()
-    const { data: product, isLoading } = useQuery(['product', id], () => fetchProductById(id))
+    const { data: product, isLoading } = useQuery(['recipe', id], () => fetchProductById(id))
 
     if (isLoading) return <ReloadIcon className="mr-2 h-14 w-14 animate-spin" />
 

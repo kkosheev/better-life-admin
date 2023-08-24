@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useQuery } from 'react-query'
-import { fetchProducts, fetchSearchProducts } from '@/lib/data'
+import { fetchRecipes, fetchSearchRecipes } from '@/lib/data'
 import { ReloadIcon, CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -47,38 +47,27 @@ const columns: ColumnDef<unknown, any>[] = [
         },
     },
     {
-        accessorKey: 'pure',
-        header: 'Pure',
-        cell: ({ row }) => {
-            return row.getValue('pure') === 1 ? 'Pure' : 'Composite'
-        },
+        accessorKey: 'cooking_time',
+        header: 'Cooking time',
     },
     {
-        accessorKey: 'unit',
-        header: 'Unit',
+        accessorKey: 'difficulty',
+        header: 'Difficulty',
     },
     {
-        accessorKey: 'glycemic_index',
-        header: 'Glycemic Index',
-    },
-    {
-        accessorKey: 'nutrition_score',
-        header: 'Nutrition Score',
-    },
-    {
-        accessorKey: 'proximates.protein',
+        accessorKey: 'nutrients.protein',
         header: 'Protein (g)',
     },
     {
-        accessorKey: 'proximates.carbohydrates',
+        accessorKey: 'nutrients.carbohydrates',
         header: 'Carbohydrates (g)',
     },
     {
-        accessorKey: 'proximates.fat',
+        accessorKey: 'nutrients.fat',
         header: 'Fat (g)',
     },
     {
-        accessorKey: 'proximates.energy',
+        accessorKey: 'nutrients.energy',
         header: 'Energy (kcal)',
     },
     {
@@ -97,8 +86,8 @@ const columns: ColumnDef<unknown, any>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => navigate(`/products/edit/${row.original?.id}`)}>
-                            Edit Product
+                        <DropdownMenuItem onClick={() => navigate(`/recipes/edit/${row.original?.id}`)}>
+                            Edit Recipe
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -123,14 +112,14 @@ export const ListRecipes: React.FC = () => {
     }
 
     const { data: products, isLoading } = useQuery(
-        ['products', fetchDataOptions],
-        () => fetchProducts(fetchDataOptions),
+        ['recipes', fetchDataOptions],
+        () => fetchRecipes(fetchDataOptions),
         { keepPreviousData: true }
     )
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
-        ['search', searchQuery],
-        () => fetchSearchProducts(searchQuery),
+        ['search_recipes', searchQuery],
+        () => fetchSearchRecipes(searchQuery),
         { keepPreviousData: false }
     )
 
@@ -164,7 +153,7 @@ export const ListRecipes: React.FC = () => {
     return (
         <div className="grid grid-cols-1 gap-8">
             <div>
-                <h1 className="text-xl font-bold">Products</h1>
+                <h1 className="text-xl font-bold">Recipes</h1>
             </div>
             {/* <Input
                 placeholder="Search products"
@@ -173,7 +162,7 @@ export const ListRecipes: React.FC = () => {
                 className="max-w-sm"
             /> */}
             <Input
-                placeholder="Search products"
+                placeholder="Search recipes"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="max-w-sm"

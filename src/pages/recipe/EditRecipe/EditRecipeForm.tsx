@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup } from '@/components/ui/select'
 import { fetchCategories, fetchSearchProducts } from '@/lib/data'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
     CaretSortIcon,
@@ -147,7 +147,11 @@ const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) =
             <div className="flex flex-row items-center justify-between">
                 <span className="text-md font-semibold mr-2">Product: </span>
                 <div className="flex-grow">
-                    <Select onValueChange={handleProductChange} disabled={!localStep.edit}>
+                    <Select
+                        onValueChange={handleProductChange}
+                        defaultValue={localStep.product.id}
+                        disabled={!localStep.edit}
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Choose ingredient" />
                         </SelectTrigger>
@@ -203,7 +207,11 @@ const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) =
             <div className="flex flex-row items-center justify-between">
                 <span className="text-md font-semibold mr-2">Action: </span>
                 <div className="flex-grow">
-                    <Select onValueChange={handleActionChange} disabled={!localStep.edit}>
+                    <Select
+                        onValueChange={handleActionChange}
+                        defaultValue={localStep.action}
+                        disabled={!localStep.edit}
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Choose action" />
                         </SelectTrigger>
@@ -219,6 +227,7 @@ const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) =
                 <Textarea
                     disabled={!localStep.edit}
                     onChange={handleChangeCustomText}
+                    defaultValue={localStep.customText}
                     placeholder="Put your custom text instruction for step here instead relying on generated one..."
                 />
             </div>
@@ -304,9 +313,11 @@ export const Ingredient: React.FC = ({ ingredient, index, onEdit, onDelete }: an
     )
 }
 
-export const CreateRecipe: React.FC = () => {
+export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingStepsList }: any) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+
+    const queryClient = useQueryClient()
 
     const navigate = useNavigate()
     const { toast } = useToast()
@@ -314,8 +325,8 @@ export const CreateRecipe: React.FC = () => {
     const [loadingProducts, setLoadingProducts] = useState(false)
     const [foundProducts, setFoundProducts] = useState([])
 
-    const [ingredients, setIngredients] = useState([])
-    const [cookingSteps, setCookingSteps] = useState([])
+    const [ingredients, setIngredients] = useState(ingredientsList)
+    const [cookingSteps, setCookingSteps] = useState(cookingStepsList)
 
     const [totalNutrients, setTotalNutrients] = useState(nutrientsValues)
 
@@ -333,10 +344,10 @@ export const CreateRecipe: React.FC = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: '',
-            image: '',
-            cooking_time: 0,
-            difficulty: '1',
+            name: recipe.name,
+            image: recipe.image_url,
+            cooking_time: recipe.cooking_time,
+            difficulty: String(recipe.difficulty),
         },
     })
 
@@ -420,8 +431,9 @@ export const CreateRecipe: React.FC = () => {
             }
             //better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
-                'https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/create',
+                'https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/updatebyid',
                 {
+                    id: recipe.id,
                     data: values,
                     ingredients: ingredients,
                     cookingSteps: cookingSteps,
@@ -435,8 +447,9 @@ export const CreateRecipe: React.FC = () => {
 
             toast({
                 title: 'Hooray 🎉',
-                description: 'Recipe created successfully!',
+                description: 'Recipe updated successfully!',
             })
+            queryClient.invalidateQueries('recipe')
             navigate('/recipes')
         } catch (err: any) {
             console.log(err.response.data.message)
@@ -453,7 +466,7 @@ export const CreateRecipe: React.FC = () => {
             {error && <div className="rounded-md p-4 bg-red-100 text-red-900 col-span-3 font-semibold">{error}</div>}
             <Form {...form}>
                 <div>
-                    <h1 className="text-xl font-bold">Create Recipe</h1>
+                    <h1 className="text-xl font-bold">Update Recipe</h1>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
