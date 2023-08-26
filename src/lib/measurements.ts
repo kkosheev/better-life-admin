@@ -44,7 +44,7 @@ export const nutrientsLabels = {
             label: 'Fiber, insoluble',
             unit: 'g',
         },
-        sugars: {
+        sugars_added: {
             label: 'Sugars, added',
             unit: 'g',
         },
@@ -429,7 +429,7 @@ export const nutrientsValues = {
     proximates_adv: {
         fiber_soluble: 0,
         fiber_insoluble: 0,
-        sugars: 0,
+        sugars_added: 0,
         glucose: 0,
         fructose: 0,
         lactose: 0,
@@ -550,7 +550,7 @@ export const nutrientsSchema = z.object({
     proximates_adv: z.object({
         fiber_soluble: z.coerce.number().gte(0),
         fiber_insoluble: z.coerce.number().gte(0),
-        sugars: z.coerce.number().gte(0),
+        sugars_added: z.coerce.number().gte(0),
         glucose: z.coerce.number().gte(0),
         fructose: z.coerce.number().gte(0),
         lactose: z.coerce.number().gte(0),
