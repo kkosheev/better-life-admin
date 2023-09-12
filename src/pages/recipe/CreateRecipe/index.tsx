@@ -30,6 +30,7 @@ import { calculateNutrientsForIngredients } from '@/core'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { actions } from '@/lib/actions'
 import { Textarea } from '@/components/ui/textarea'
+import { debounce } from '@/lib/utils'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
@@ -369,15 +370,15 @@ export const CreateRecipe: React.FC = () => {
         setIngredients([...ingredients, newProduct])
     }
 
-    const handleSearchIngredient = async (event) => {
+    const handleSearchIngredient = debounce(async (event) => {
         setLoadingProducts(true)
 
         const name = event.target.value
-        const result = await fetchSearchProducts(name)
+        const result = await fetchSearchProducts(name, 10)
 
         setFoundProducts(result)
         setLoadingProducts(false)
-    }
+    }, 300)
 
     // Cooking Steps
 

@@ -15,6 +15,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useQuery } from 'react-query'
 import { fetchProducts, fetchSearchProducts } from '@/lib/data'
+import { useDebounce } from '@uidotdev/usehooks'
 import { ReloadIcon, CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -83,6 +84,7 @@ const columns: ColumnDef<unknown, any>[] = [
     },
     {
         id: 'actions',
+        header: 'Actions',
         enableHiding: false,
         cell: ({ row }) => {
             const navigate = useNavigate()
@@ -111,6 +113,7 @@ export const ListProducts: React.FC = () => {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [searchQuery, setSearchQuery] = React.useState('')
+    const [fetchParams] = useDebounce([searchQuery], 300)
 
     const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
@@ -129,8 +132,8 @@ export const ListProducts: React.FC = () => {
     )
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
-        ['search', searchQuery],
-        () => fetchSearchProducts(searchQuery),
+        ['search', ...fetchParams],
+        () => fetchSearchProducts(searchQuery, 20),
         { keepPreviousData: false }
     )
 

@@ -36,3 +36,14 @@ export function sumNestedFields(obj1, obj2) {
 
     return result
 }
+
+export function debounce(func, delay) {
+    let timerId
+
+    return function (...args) {
+        clearTimeout(timerId)
+        timerId = setTimeout(() => {
+            func.apply(this, args)
+        }, delay)
+    }
+}

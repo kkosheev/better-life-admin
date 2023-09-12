@@ -16,11 +16,11 @@ export const fetchProducts = async ({ pageIndex, pageSize }: { pageIndex: number
     return data
 }
 
-export const fetchSearchProducts = async (searchQuery) => {
+export const fetchSearchProducts = async (searchQuery, limit = 10) => {
     if (searchQuery.length <= 2) return []
 
     const { data } = await axios.get(
-        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}`
+        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}&limit=${limit}`
     )
     // better-life-serverless-functions-kkosheev.vercel.app
 
@@ -45,11 +45,11 @@ export const fetchRecipes = async ({ pageIndex, pageSize }: { pageIndex: number;
     return data
 }
 
-export const fetchSearchRecipes = async (searchQuery) => {
+export const fetchSearchRecipes = async (searchQuery, limit = 20) => {
     if (searchQuery.length <= 2) return []
 
     const { data } = await axios.get(
-        `https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/search?text=${searchQuery}`
+        `https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/search?text=${searchQuery}&limit=${limit}`
     )
     // better-life-serverless-functions-kkosheev.vercel.app
 

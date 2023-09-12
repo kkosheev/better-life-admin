@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { useNavigate } from 'react-router-dom'
+import { useDebounce } from '@uidotdev/usehooks'
 
 const columns: ColumnDef<unknown, any>[] = [
     {
@@ -72,6 +73,7 @@ const columns: ColumnDef<unknown, any>[] = [
     },
     {
         id: 'actions',
+        header: 'Actions',
         enableHiding: false,
         cell: ({ row }) => {
             const navigate = useNavigate()
@@ -100,6 +102,7 @@ export const ListRecipes: React.FC = () => {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [searchQuery, setSearchQuery] = React.useState('')
+    const [fetchParams] = useDebounce([searchQuery], 300)
 
     const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
@@ -118,8 +121,8 @@ export const ListRecipes: React.FC = () => {
     )
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
-        ['search_recipes', searchQuery],
-        () => fetchSearchRecipes(searchQuery),
+        ['search_recipes', ...fetchParams],
+        () => fetchSearchRecipes(searchQuery, 20),
         { keepPreviousData: false }
     )
 
