@@ -36,7 +36,9 @@ const columns: ColumnDef<unknown, any>[] = [
             return row.getValue('image_url') ? (
                 <img className="h-16 w-16" src={row.getValue('image_url')} />
             ) : (
-                <div className="bg-black"></div>
+                <div className="flex bg-gray-200 h-16 w-16 rounded justify-center items-center">
+                    <span className="text-xs text-gray-400">No Image</span>
+                </div>
             )
         },
     },
