@@ -34,7 +34,7 @@ import { debounce } from '@/lib/utils'
 
 const formSchema = z.object({
     name: z.string().min(2).max(100),
-    image: z.string().url(),
+    image: z.string(),
     cooking_time: z.coerce.number().gte(0),
     difficulty: z.coerce.number().gte(0).lte(4),
 })

@@ -33,7 +33,11 @@ const columns: ColumnDef<unknown, any>[] = [
         accessorKey: 'image_url',
         header: 'Image',
         cell: ({ row }) => {
-            return <img className="h-16 w-16" src={row.getValue('image_url')} />
+            return row.getValue('image_url') ? (
+                <img className="h-16 w-16" src={row.getValue('image_url')} />
+            ) : (
+                <div className="bg-black"></div>
+            )
         },
     },
     {
