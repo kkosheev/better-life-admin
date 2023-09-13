@@ -139,7 +139,7 @@ export const ListProducts: React.FC = () => {
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
         ['search', ...fetchParams],
-        () => fetchSearchProducts(searchQuery, 20),
+        () => fetchSearchProducts(searchQuery, 30),
         { keepPreviousData: false }
     )
 

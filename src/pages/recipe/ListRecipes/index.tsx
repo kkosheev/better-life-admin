@@ -128,7 +128,7 @@ export const ListRecipes: React.FC = () => {
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
         ['search_recipes', ...fetchParams],
-        () => fetchSearchRecipes(searchQuery, 20),
+        () => fetchSearchRecipes(searchQuery, 30),
         { keepPreviousData: false }
     )
 

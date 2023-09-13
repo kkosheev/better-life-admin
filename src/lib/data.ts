@@ -16,7 +16,7 @@ export const fetchProducts = async ({ pageIndex, pageSize }: { pageIndex: number
     return data
 }
 
-export const fetchSearchProducts = async (searchQuery, limit = 10) => {
+export const fetchSearchProducts = async (searchQuery, limit = 30) => {
     if (searchQuery.length <= 2) return []
 
     const { data } = await axios.get(
@@ -45,7 +45,7 @@ export const fetchRecipes = async ({ pageIndex, pageSize }: { pageIndex: number;
     return data
 }
 
-export const fetchSearchRecipes = async (searchQuery, limit = 20) => {
+export const fetchSearchRecipes = async (searchQuery, limit = 30) => {
     if (searchQuery.length <= 2) return []
 
     const { data } = await axios.get(

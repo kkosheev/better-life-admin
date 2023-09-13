@@ -385,7 +385,7 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
         setLoadingProducts(true)
 
         const name = event.target.value
-        const result = await fetchSearchProducts(name, 10)
+        const result = await fetchSearchProducts(name, 20)
 
         setFoundProducts(result)
         setLoadingProducts(false)
