@@ -66,7 +66,7 @@ export const EditProductForm: React.FC = ({ product, productCategories }: any) =
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: product.name,
-            image: product.image_url,
+            image: product.image_url || '',
             pure: Boolean(product.pure),
             unit: product.unit,
             price: product.price,

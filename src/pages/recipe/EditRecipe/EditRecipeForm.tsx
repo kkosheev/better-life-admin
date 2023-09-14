@@ -346,7 +346,7 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: recipe.name,
-            image: recipe.image_url,
+            image: recipe.image_url || '',
             cooking_time: recipe.cooking_time,
             difficulty: String(recipe.difficulty),
         },
