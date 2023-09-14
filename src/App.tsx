@@ -9,6 +9,7 @@ import { ListRecipes } from '@/pages/recipe/ListRecipes'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { CreateRecipe } from '@/pages/recipe/CreateRecipe'
 import { EditRecipe } from '@/pages/recipe/EditRecipe'
+import { ListArchivedProducts } from './pages/product/ListArchivedProducts'
 
 // Create a client
 const queryClient = new QueryClient({
@@ -30,6 +31,14 @@ function App() {
                         element={
                             <AdminLayout>
                                 <ListProducts />
+                            </AdminLayout>
+                        }
+                    />
+                    <Route
+                        path="/products/archived"
+                        element={
+                            <AdminLayout>
+                                <ListArchivedProducts />
                             </AdminLayout>
                         }
                     />

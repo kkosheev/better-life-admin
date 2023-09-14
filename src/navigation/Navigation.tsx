@@ -11,6 +11,7 @@ export function Navigation() {
                 <MenubarContent>
                     <MenubarItem onClick={() => navigate('/products')}>List Products</MenubarItem>
                     <MenubarItem onClick={() => navigate('/product/create')}>Add Product</MenubarItem>
+                    <MenubarItem onClick={() => navigate('/products/archived')}>Archived Products</MenubarItem>
                 </MenubarContent>
             </MenubarMenu>
             <MenubarMenu>

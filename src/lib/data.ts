@@ -7,20 +7,28 @@ export const fetchCategories = async () => {
     return data
 }
 
-export const fetchProducts = async ({ pageIndex, pageSize }: { pageIndex: number; pageSize: number }) => {
+export const fetchProducts = async ({
+    pageIndex,
+    pageSize,
+    archived = 'false',
+}: {
+    pageIndex: number
+    pageSize: number
+    archived: 'false' | 'true'
+}) => {
     const { data } = await axios.get(
-        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/fetch?pageIndex=${pageIndex}&pageSize=${pageSize}`
+        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/fetch?pageIndex=${pageIndex}&pageSize=${pageSize}&archived=${archived}`
     )
     // better-life-serverless-functions-kkosheev.vercel.app
 
     return data
 }
 
-export const fetchSearchProducts = async (searchQuery, limit = 30) => {
+export const fetchSearchProducts = async (searchQuery, limit = 30, archived = 'false') => {
     if (searchQuery.length <= 2) return []
 
     const { data } = await axios.get(
-        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}&limit=${limit}`
+        `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}&limit=${limit}&archived=${archived}`
     )
     // better-life-serverless-functions-kkosheev.vercel.app
 
@@ -43,6 +51,10 @@ export const fetchRecipes = async ({ pageIndex, pageSize }: { pageIndex: number;
     // better-life-serverless-functions-kkosheev.vercel.app
 
     return data
+}
+
+export const toggleArchiveProduct = async (id) => {
+    await axios.get(`https://better-life-serverless-functions-kkosheev.vercel.app/api/products/archive?id=${id}`)
 }
 
 export const fetchSearchRecipes = async (searchQuery, limit = 30) => {

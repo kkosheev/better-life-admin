@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useQuery, useQueryClient } from 'react-query'
 import { fetchProducts, fetchSearchProducts, toggleArchiveProduct } from '@/lib/data'
 import { useDebounce } from '@uidotdev/usehooks'
-import { ReloadIcon, CaretSortIcon, DotsHorizontalIcon, Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
+import { ReloadIcon, CaretSortIcon, DotsHorizontalIcon, Pencil1Icon, SymbolIcon } from '@radix-ui/react-icons'
 import { Button } from '@/components/ui/button'
 import {
     DropdownMenu,
@@ -99,16 +99,16 @@ const columns: ColumnDef<unknown, any>[] = [
 
             const queryClient = useQueryClient()
 
-            const handleArchive = async (id) => {
+            const handleUnarchive = async (id) => {
                 toast({
                     title: 'Hooray 🎉',
-                    description: 'Product archived successfully!',
+                    description: 'Product unarchived successfully!',
                 })
 
-                await toggleArchiveProduct(row.original?.id)
+                await toggleArchiveProduct(id)
 
-                queryClient.invalidateQueries('products')
-                queryClient.invalidateQueries('search')
+                queryClient.invalidateQueries('products_archived')
+                queryClient.invalidateQueries('search_archived')
             }
 
             return (
@@ -124,8 +124,8 @@ const columns: ColumnDef<unknown, any>[] = [
                         <DropdownMenuItem onClick={() => navigate(`/products/edit/${row.original?.id}`)}>
                             <Pencil1Icon /> &nbsp; Edit Product
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleArchive(row.original?.id)}>
-                            <TrashIcon /> &nbsp; Archive
+                        <DropdownMenuItem onClick={() => handleUnarchive(row.original?.id)}>
+                            <SymbolIcon /> &nbsp; Unarchive
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -134,7 +134,7 @@ const columns: ColumnDef<unknown, any>[] = [
     },
 ]
 
-export const ListProducts: React.FC = () => {
+export const ListArchivedProducts: React.FC = () => {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [searchQuery, setSearchQuery] = React.useState('')
@@ -148,18 +148,18 @@ export const ListProducts: React.FC = () => {
     const fetchDataOptions = {
         pageIndex,
         pageSize,
-        archived: 'false',
+        archived: 'true',
     } as const
 
     const { data: products, isLoading } = useQuery(
-        ['products', fetchDataOptions],
+        ['products_archived', fetchDataOptions],
         () => fetchProducts(fetchDataOptions),
         { keepPreviousData: true }
     )
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
-        ['search', ...fetchParams],
-        () => fetchSearchProducts(searchQuery, 30, 'false'),
+        ['search_archived', ...fetchParams],
+        () => fetchSearchProducts(searchQuery, 30, 'true'),
         { keepPreviousData: false }
     )
 
@@ -193,7 +193,7 @@ export const ListProducts: React.FC = () => {
     return (
         <div className="grid grid-cols-1 gap-8">
             <div>
-                <h1 className="text-xl font-bold">Products</h1>
+                <h1 className="text-xl font-bold">Archived Products</h1>
             </div>
             {/* <Input
                 placeholder="Search products"
@@ -202,7 +202,7 @@ export const ListProducts: React.FC = () => {
                 className="max-w-sm"
             /> */}
             <Input
-                placeholder="Search products"
+                placeholder="Search archived products"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="max-w-sm"
