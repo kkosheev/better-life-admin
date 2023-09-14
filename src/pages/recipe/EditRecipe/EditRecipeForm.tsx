@@ -554,7 +554,7 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
                                     <PlusIcon /> &nbsp; Add serving
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-100">
+                            <PopoverContent className="w-max">
                                 <div className="grid gap-4">
                                     <div className="space-y-2">
                                         <h4 className="font-medium leading-none">Search product</h4>
@@ -568,17 +568,25 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid">
+                                    <div className="grid gap-3">
                                         {loadingProducts && <ReloadIcon className="mr-2 h-6 w-6 animate-spin" />}
                                         {!loadingProducts && foundProducts.length === 0 && (
                                             <p className="text-sm text-muted-foreground">No products found</p>
                                         )}
                                         {!loadingProducts &&
                                             foundProducts.map((product) => (
-                                                <div className={'grid gap-1 grid-cols-4 items-center'}>
-                                                    <img className="h-10 w-10" src={product.image_url} />
-                                                    <div className={'col-span-2'}>
-                                                        <span className="text-sm font-semibold">{product.name}</span>
+                                                <div className={'flex flex-row gap-3 items-center justify-stretch'}>
+                                                    {product.image_url ? (
+                                                        <img className="h-10 w-10" src={product.image_url} />
+                                                    ) : (
+                                                        <div className="p-2 flex bg-gray-200 h-12 w-12 rounded justify-center items-center">
+                                                            <span className="text-xs text-gray-400">No Image</span>
+                                                        </div>
+                                                    )}
+                                                    <div className={'flex-grow w-52'}>
+                                                        <span className="text-sm font-semibold overflow-ellipsis">
+                                                            {product.name}
+                                                        </span>
                                                     </div>
                                                     <PopoverClose asChild>
                                                         <Button
