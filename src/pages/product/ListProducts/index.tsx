@@ -268,6 +268,24 @@ export const ListProducts: React.FC = () => {
                         >
                             Next
                         </Button>
+                        <span className="mt-5 flex items-center gap-1">
+                            Go to page:
+                            <input
+                                type="number"
+                                defaultValue={table.getState().pagination.pageIndex + 1}
+                                onChange={(e) => {
+                                    const page = e.target.value ? Number(e.target.value) - 1 : 0
+                                    table.setPageIndex(page)
+                                }}
+                                className="border p-1 rounded w-16"
+                            />
+                        </span>
+                        <span className="mt-5 flex items-center gap-1">
+                            <div>Page</div>
+                            <strong>
+                                {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                            </strong>
+                        </span>
                     </div>
                 </>
             )}
