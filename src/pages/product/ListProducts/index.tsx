@@ -26,7 +26,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
 
 const columns: ColumnDef<unknown, any>[] = [
@@ -51,6 +51,13 @@ const columns: ColumnDef<unknown, any>[] = [
                     Name
                     <CaretSortIcon className="ml-2 h-4 w-4" />
                 </Button>
+            )
+        },
+        cell: ({ row }) => {
+            return (
+                <Link className="underline leading-loose" to={`/products/edit/${row.original?.id}`}>
+                    {row.getValue('name')}
+                </Link>
             )
         },
     },
