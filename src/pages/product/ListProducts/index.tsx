@@ -28,6 +28,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { useNavigate, Link } from 'react-router-dom'
 import { useToast } from '@/components/ui/use-toast'
+import { Filters } from './filters'
 
 const columns: ColumnDef<unknown, any>[] = [
     {
@@ -147,6 +148,8 @@ export const ListProducts: React.FC = () => {
     const [searchQuery, setSearchQuery] = React.useState('')
     const [fetchParams] = useDebounce([searchQuery], 300)
 
+    const [filters, setFilters] = React.useState([])
+
     const [{ pageIndex, pageSize }, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
@@ -159,14 +162,14 @@ export const ListProducts: React.FC = () => {
     } as const
 
     const { data: products, isLoading } = useQuery(
-        ['products', fetchDataOptions],
-        () => fetchProducts(fetchDataOptions),
+        ['products', fetchDataOptions, filters],
+        () => fetchProducts(fetchDataOptions, filters),
         { keepPreviousData: true }
     )
 
     const { data: searchData, isLoading: isSearchLoading } = useQuery(
-        ['search', ...fetchParams],
-        () => fetchSearchProducts(searchQuery, 30, 'false'),
+        ['search', ...fetchParams, filters],
+        () => fetchSearchProducts(searchQuery, 30, 'false', filters),
         { keepPreviousData: false }
     )
 
@@ -214,6 +217,7 @@ export const ListProducts: React.FC = () => {
                 onChange={(event) => setSearchQuery(event.target.value)}
                 className="max-w-sm"
             />
+            <Filters filters={filters} setFilters={setFilters} />
             {(isLoading || isSearchLoading) && <ReloadIcon className="mr-2 h-14 w-14 animate-spin" />}
             {!isLoading && !isSearchLoading && (
                 <>
