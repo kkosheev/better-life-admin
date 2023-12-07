@@ -33,8 +33,6 @@ export const fetchProducts = async ({ pageIndex, pageSize, archived = 'false' }:
 export const fetchSearchProducts = async (searchQuery, limit = 30, archived = 'false', filters = []) => {
     if (searchQuery.length <= 2) return []
 
-    console.log(filters)
-
     const { data } = await axios.post(
         `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}&limit=${limit}&archived=${archived}`,
         {

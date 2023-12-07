@@ -348,6 +348,8 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
             name: recipe.name,
             image: recipe.image_url || '',
             cooking_time: recipe.cooking_time,
+            prep_time: recipe.prep_time,
+            base_serving: recipe.base_serving,
             difficulty: String(recipe.difficulty),
         },
     })
@@ -503,6 +505,32 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
                                     <FormLabel>Cooking Time (Minutes)</FormLabel>
                                     <FormControl>
                                         <Input placeholder="30" type="number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="prep_time"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Prep. Time (Minutes)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="5" type="number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="base_serving"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Base Serving</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="1" type="number" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

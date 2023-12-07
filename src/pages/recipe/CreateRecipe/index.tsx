@@ -337,6 +337,8 @@ export const CreateRecipe: React.FC = () => {
             name: '',
             image: '',
             cooking_time: 0,
+            prep_time: 0,
+            base_serving: 1,
             difficulty: '1',
         },
     })
@@ -374,7 +376,7 @@ export const CreateRecipe: React.FC = () => {
         setLoadingProducts(true)
 
         const name = event.target.value
-        const result = await fetchSearchProducts(name, 20)
+        const result = await fetchSearchProducts(name, 20, 'false', [])
 
         setFoundProducts(result)
         setLoadingProducts(false)
@@ -490,6 +492,32 @@ export const CreateRecipe: React.FC = () => {
                                     <FormLabel>Cooking Time (Minutes)</FormLabel>
                                     <FormControl>
                                         <Input placeholder="30" type="number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="prep_time"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Prep. Time (Minutes)</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="5" type="number" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="base_serving"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Base Serving</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="1" type="number" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
