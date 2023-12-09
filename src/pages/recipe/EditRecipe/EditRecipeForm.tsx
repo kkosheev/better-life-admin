@@ -36,6 +36,8 @@ const formSchema = z.object({
     name: z.string().min(2).max(100),
     image: z.string(),
     cooking_time: z.coerce.number().gte(0),
+    prep_time: z.coerce.number().gte(0),
+    base_serving: z.coerce.number().gte(0),
     difficulty: z.coerce.number().gte(0).lte(4),
 })
 
@@ -148,11 +150,7 @@ const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) =
             <div className="flex flex-row items-center justify-between">
                 <span className="text-md font-semibold mr-2">Product: </span>
                 <div className="flex-grow">
-                    <Select
-                        onValueChange={handleProductChange}
-                        defaultValue={localStep.product.id}
-                        disabled={!localStep.edit}
-                    >
+                    <Select onValueChange={handleProductChange} disabled={!localStep.edit}>
                         <SelectTrigger>
                             <SelectValue placeholder="Choose ingredient" />
                         </SelectTrigger>
@@ -435,12 +433,12 @@ export const EditRecipeForm: React.FC = ({ recipe, ingredientsList, cookingSteps
             //better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
                 'https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/updatebyid',
-                {
+                JSON.stringify({
                     id: recipe.id,
                     data: values,
                     ingredients: ingredients,
                     cookingSteps: cookingSteps,
-                },
+                }),
                 {
                     headers: {
                         'Content-Type': 'application/json',

@@ -36,6 +36,8 @@ const formSchema = z.object({
     name: z.string().min(2).max(100),
     image: z.string(),
     cooking_time: z.coerce.number().gte(0),
+    prep_time: z.coerce.number().gte(0),
+    base_serving: z.coerce.number().gte(0),
     difficulty: z.coerce.number().gte(0).lte(4),
 })
 
@@ -417,6 +419,8 @@ export const CreateRecipe: React.FC = () => {
             setError('')
             setLoading(true)
 
+            console.log(values)
+
             if (ingredients.length === 0 || cookingSteps.length === 0) {
                 setError('Ingredients list or cooking steps are missing')
                 return
@@ -424,11 +428,11 @@ export const CreateRecipe: React.FC = () => {
             //better-life-serverless-functions-kkosheev.vercel.app
             await axios.post(
                 'https://better-life-serverless-functions-kkosheev.vercel.app/api/recipes/create',
-                {
+                JSON.stringify({
                     data: values,
                     ingredients: ingredients,
                     cookingSteps: cookingSteps,
-                },
+                }),
                 {
                     headers: {
                         'Content-Type': 'application/json',
