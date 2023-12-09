@@ -16,9 +16,9 @@ type FetchOptions = {
 export const fetchProducts = async ({ pageIndex, pageSize, archived = 'false' }: FetchOptions, filters: any = []) => {
     const { data } = await axios.post(
         `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/fetch?pageIndex=${pageIndex}&pageSize=${pageSize}&archived=${archived}`,
-        {
+        JSON.stringify({
             filters: filters,
-        },
+        }),
         {
             headers: {
                 'Content-Type': 'application/json',
@@ -35,15 +35,41 @@ export const fetchSearchProducts = async (searchQuery, limit = 30, archived = 'f
 
     const { data } = await axios.post(
         `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?text=${searchQuery}&limit=${limit}&archived=${archived}`,
-        {
+        JSON.stringify({
             filters: filters,
-        },
+        }),
         {
             headers: {
                 'Content-Type': 'application/json',
             },
         }
     )
+    // try {
+    //     const queryParams = {
+    //         text: searchQuery,
+    //         limit: limit.toString(),
+    //         archived: archived,
+    //     }
+
+    //     const queryString = new URLSearchParams(queryParams).toString()
+
+    //     const response = await fetch(
+    //         `https://better-life-serverless-functions-kkosheev.vercel.app/api/products/search?${queryString}`,
+    //         //`http://localhost:3000/api/products/search?${queryString}`,
+    //         {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 filters: [],
+    //             }),
+    //         }
+    //     )
+    //     console.log(await response.json())
+    // } catch (error) {
+    //     console.log(error)
+    // }
     // better-life-serverless-functions-kkosheev.vercel.app
 
     return data
