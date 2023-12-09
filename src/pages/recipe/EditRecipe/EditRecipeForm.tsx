@@ -150,7 +150,11 @@ const CookingStep: React.FC = ({ step, ingredients, index, onEdit, onDelete }) =
             <div className="flex flex-row items-center justify-between">
                 <span className="text-md font-semibold mr-2">Product: </span>
                 <div className="flex-grow">
-                    <Select onValueChange={handleProductChange} disabled={!localStep.edit}>
+                    <Select
+                        onValueChange={handleProductChange}
+                        defaultValue={localStep.product?.id}
+                        disabled={!localStep.edit}
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Choose ingredient" />
                         </SelectTrigger>
